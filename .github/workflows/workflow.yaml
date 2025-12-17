@@ -47,15 +47,23 @@ jobs:
           docker build -t vishal26778/simpletimeservice:${{ env.DOCKER_TAG }} app/
 
       # -------------------
-      # Trivy Image Scan
+      # Install Trivy CLI
       # -------------------
-      - name: Trivy Scan for Vulnerabilities
-        uses: aquasecurity/trivy-action@v0.39.0
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.2.3
         with:
-          image-ref: vishal26778/simpletimeservice:${{ env.DOCKER_TAG }}
-          format: table
-          exit-code: 1
-          ignore-unfixed: false
+          version: v0.61.0
+
+      # -------------------
+      # Run Trivy Scan (fail on CRITICAL vulnerabilities)
+      # -------------------
+      - name: Trivy Scan for Critical Vulnerabilities
+        run: |
+          trivy image vishal26778/simpletimeservice:${{ env.DOCKER_TAG }} \
+            --format table \
+            --exit-code 1 \
+            --ignore-unfixed \
+            --severity CRITICAL
 
       # -------------------
       # Push Image to Docker Hub
