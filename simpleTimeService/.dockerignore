@@ -1,0 +1,42 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+.env
+.env.local
+
+# Documentation
+README.md
+LICENSE
+CONTRIBUTING.md
+
+# CI/CD files
+.github
+.gitlab-ci.yml
+.circleci
+
+# Build artifacts
+dist
+build
+*.o
+*.a
+*.so
+
+# Testing
+*_test.go
+coverage.txt
+.coverage
+
+# Docker files (don't need in final image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
