@@ -50,7 +50,7 @@ jobs:
       # Trivy Image Scan
       # -------------------
       - name: Trivy Scan for Vulnerabilities
-        uses: aquasecurity/trivy-action@v0.41.0
+        uses: aquasecurity/trivy-action@v0.39.0
         with:
           image-ref: vishal26778/simpletimeservice:${{ env.DOCKER_TAG }}
           format: table
