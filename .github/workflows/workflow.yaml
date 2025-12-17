@@ -1,0 +1,64 @@
+name: worflow-for-app
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_IMAGE_NAME: vishal26778/simpletimeservice
+  DOCKER_TAG: ${{ github.sha }}
+
+jobs:
+
+  # ------------------------
+  # Docker Build, Scan & Push
+  # ------------------------
+  container-security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # -------------------
+      # Docker Buildx
+      # -------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # -------------------
+      # Login to Docker Hub
+      # -------------------
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # -------------------
+      # Build Docker Image
+      # -------------------
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }} app/
+
+      # -------------------
+      # Trivy Image Scan
+      # -------------------
+      - name: Trivy Scan for Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
+          format: table
+          exit-code: 1
+          ignore-unfixed: false
+
+      # -------------------
+      # Push Image to Docker Hub
+      # -------------------
+      - name: Push Docker Image
+        run: |
+          docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
