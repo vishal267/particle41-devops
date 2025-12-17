@@ -1,4 +1,5 @@
-name: worflow-for-app
+name: workflow-for-app
+
 on:
   pull_request:
     branches:
@@ -16,7 +17,7 @@ jobs:
   # ------------------------
   # Docker Build, Scan & Push
   # ------------------------
-  container-security:
+  app-ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,15 +44,15 @@ jobs:
       # -------------------
       - name: Build Docker Image
         run: |
-          docker build -t ${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }} app/
+          docker build -t vishal26778/simpletimeservice:${{ env.DOCKER_TAG }} app/
 
       # -------------------
       # Trivy Image Scan
       # -------------------
       - name: Trivy Scan for Vulnerabilities
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.41.0
         with:
-          image-ref: ${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
+          image-ref: vishal26778/simpletimeservice:${{ env.DOCKER_TAG }}
           format: table
           exit-code: 1
           ignore-unfixed: false
@@ -61,4 +62,4 @@ jobs:
       # -------------------
       - name: Push Docker Image
         run: |
-          docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
+          docker push vishal26778/simpletimeservice:${{ env.DOCKER_TAG }}
