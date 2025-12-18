@@ -1,0 +1,73 @@
+name: workflow-for-app
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_IMAGE_NAME: vishal26778/simpletimeservice
+  DOCKER_TAG: ${{ github.sha }}
+
+jobs:
+
+  # ------------------------
+  # Docker Build, Scan & Push
+  # ------------------------
+  app-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # -------------------
+      # Docker Buildx
+      # -------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # -------------------
+      # Login to Docker Hub
+      # -------------------
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # -------------------
+      # Build Docker Image
+      # -------------------
+      - name: Build Docker Image
+        run: |
+          docker build -t vishal26778/simpletimeservice:${{ env.DOCKER_TAG }} app/
+
+      # -------------------
+      # Install Trivy CLI
+      # -------------------
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.2.3
+        with:
+          version: v0.61.0
+
+      # -------------------
+      # Run Trivy Scan (fail on CRITICAL vulnerabilities)
+      # -------------------
+      - name: Trivy Scan for Critical Vulnerabilities
+        run: |
+          trivy image vishal26778/simpletimeservice:${{ env.DOCKER_TAG }} \
+            --format table \
+            --exit-code 1 \
+            --ignore-unfixed \
+            --severity CRITICAL
+
+      # -------------------
+      # Push Image to Docker Hub
+      # -------------------
+      - name: Push Docker Image
+        run: |
+          docker push vishal26778/simpletimeservice:${{ env.DOCKER_TAG }}
