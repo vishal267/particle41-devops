@@ -21,7 +21,6 @@ Architecture
      └───────────────────────────────────┘
 
 
-
 # Make sure you have main.go file and Dockerfile in app  directory
 
 cd app/
@@ -100,6 +99,27 @@ Route53 DNS (app.particle41.com)
 ALB (with ACM certificate)
     ↓
 EKS Pods (private subnets)
+
+### Setting Up application On EKS using Helm 
+
+
+terraform/helm/app 
+
+helm install app . --values helm/app/values.yaml --wait
+
+Verify pods/svc/ingress 
+
+kubectl get pods -l app.kubernetes.io/name=app
+kubectl get svc,ingress -l app.kubernetes.io/name=app
+
+
+Deployment (3 pods, image: vishal26778/simpletimeservice:1.0.0)
+Service (ClusterIP:80 → 8080)
+Ingress (ALB integration)
+HPA (auto-scaling 3-10 replicas)
+PDB (min 2 available)
+ServiceAccount (RBAC)
+NetworkPolicy
 
 ### Worklow for CI Flow 
 
