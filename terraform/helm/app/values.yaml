@@ -1,5 +1,5 @@
-# Helm Chart Values for Simple Time Service
-# Default values for simpletimeservice Helm chart
+# Helm Chart Values for Go Application
+# Default values for app Helm chart
 
 replicaCount: 2
 
@@ -50,7 +50,7 @@ ingress:
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     # Uncomment below when SSL certificate is available
     # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/xxx"
-    alb.ingress.kubernetes.io/group.name: simpletimeservice
+    alb.ingress.kubernetes.io/group.name: app
     alb.ingress.kubernetes.io/group.order: "1"
     alb.ingress.kubernetes.io/healthcheck-path: /health
     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
@@ -64,7 +64,7 @@ ingress:
         - path: /
           pathType: Prefix
   tls: []
-  #  - secretName: simpletimeservice-tls
+  #  - secretName: app-tls
   #    hosts:
   #      - example.com
 
@@ -97,7 +97,7 @@ affinity:
           - key: app.kubernetes.io/name
             operator: In
             values:
-            - simpletimeservice
+            - app
         topologyKey: kubernetes.io/hostname
 
 # Application specific settings
